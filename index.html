@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Especiero — Stock y Caja</title>
+<link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <button type="button" class="burbuja-contacto" id="btnAbrirContacto" aria-label="Agenda de contacto">📇</button>
+    <h1>El Especiero</h1>
+    <div class="sub">stock, ingresos y cierre de caja</div>
+  </header>
+
+  <nav>
+    <button class="tab active" data-tab="inventario">Inventario</button>
+    <button class="tab" data-tab="movimientos">Movimientos</button>
+    <button class="tab" data-tab="cierre">Cierre de caja</button>
+    <button class="tab" data-tab="control">Control de caja</button>
+  </nav>
+
+  <!-- INVENTARIO -->
+  <section class="panel active" id="panel-inventario">
+    <div class="card">
+      <h2>Agregar especia</h2>
+      <div class="row">
+        <div class="field">
+          <label>Nombre</label>
+          <input type="text" id="invNombre" placeholder="Ej: Pimentón ahumado">
+        </div>
+        <div class="field" style="max-width:190px;position:relative;">
+          <label>Cantidad</label>
+          <div class="cantidad-group">
+            <input type="number" id="invCantidadNum" placeholder="0" min="0" step="0.01">
+            <button type="button" class="unidad-btn" id="btnUnidad">
+              <span id="unidadLabel">kg</span><span class="unidad-caret">▾</span>
+            </button>
+          </div>
+          <div class="unidad-dropdown" id="unidadDropdown" hidden>
+            <button type="button" data-u="kg">kg</button>
+            <button type="button" data-u="g">g</button>
+            <button type="button" data-u="l">l</button>
+            <button type="button" data-u="ml">ml</button>
+            <button type="button" data-u="unid">unid</button>
+            <button type="button" data-u="frasco">frasco</button>
+          </div>
+        </div>
+        <div class="field" style="max-width:190px;">
+          <label>Imagen</label>
+          <input type="file" id="invImagen" accept="image/*">
+        </div>
+      </div>
+      <button class="btn-primary" id="btnAddInv">Agregar al stock</button>
+    </div>
+
+    <div class="card">
+      <h2>Stock actual</h2>
+      <div id="tablaInventario"><div class="empty">Todavía no cargaste especias.</div></div>
+    </div>
+  </section>
+
+  <!-- MODAL EDITAR STOCK -->
+  <div class="modal-overlay" id="modalEditarStock">
+    <div class="modal-box">
+      <button type="button" class="modal-close" id="btnCerrarModalX" aria-label="Cerrar">×</button>
+      <h3>Editar especia</h3>
+      <div class="row">
+        <div class="field" style="max-width:190px;position:relative;">
+          <label>Cantidad</label>
+          <div class="cantidad-group">
+            <input type="number" id="editCantidadNum" placeholder="0" min="0" step="0.01">
+            <button type="button" class="unidad-btn" id="btnUnidadEdit">
+              <span id="unidadLabelEdit">kg</span><span class="unidad-caret">▾</span>
+            </button>
+          </div>
+          <div class="unidad-dropdown" id="unidadDropdownEdit" hidden>
+            <button type="button" data-u="kg">kg</button>
+            <button type="button" data-u="g">g</button>
+            <button type="button" data-u="l">l</button>
+            <button type="button" data-u="ml">ml</button>
+            <button type="button" data-u="unid">unid</button>
+            <button type="button" data-u="frasco">frasco</button>
+          </div>
+        </div>
+        <div class="field" style="max-width:190px;">
+          <label>Imagen</label>
+          <input type="file" id="editImagen" accept="image/*">
+        </div>
+      </div>
+      <button type="button" class="btn-danger" id="btnToggleAgotado" style="width:100%;margin-bottom:14px;">Marcar como agotado</button>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="btnCancelarEdit">Cancelar</button>
+        <button type="button" class="btn-primary" id="btnGuardarEdit">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL AGENDA DE CONTACTO -->
+  <div class="modal-overlay" id="modalContacto">
+    <div class="modal-box modal-box-hojas" style="max-width:440px;">
+      <button type="button" class="modal-close" id="btnCerrarContacto" aria-label="Cerrar">×</button>
+      <h3>Agenda de contacto</h3>
+
+      <div class="row">
+        <div class="field">
+          <label>Nombre</label>
+          <input type="text" id="contNombre" placeholder="Ej: Proveedor Don José">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Teléfono</label>
+          <input type="text" id="contTelefono" placeholder="Ej: 381 555 1234">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Ciudad</label>
+          <input type="text" id="contCiudad" placeholder="Ej: San Miguel de Tucumán">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Información</label>
+          <input type="text" id="contInfo" placeholder="Notas, referencia, horario, etc.">
+        </div>
+      </div>
+      <button type="button" class="btn-primary" id="btnGuardarContacto" style="width:100%;">Guardar contacto</button>
+
+      <div id="listaContactos" style="margin-top:18px;">
+        <div class="empty">Todavía no agendaste contactos.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOVIMIENTOS -->
+  <section class="panel" id="panel-movimientos">
+    <div class="card">
+      <h2>Nuevo movimiento</h2>
+      <div class="row">
+        <div class="field" style="max-width:130px;">
+          <label>Tipo</label>
+          <select id="movTipo">
+            <option value="ingreso">Ingreso</option>
+            <option value="egreso">Gasto</option>
+          </select>
+        </div>
+
+        <div class="field" id="campoConceptoGasto" style="max-width:200px;">
+          <label>Concepto</label>
+          <input type="text" id="movConcepto" placeholder="Ej: Compra de bolsas">
+        </div>
+
+        <div class="field" id="campoConceptoIngreso" style="display:none;">
+          <label>Producto</label>
+          <button type="button" class="chip-trigger" id="btnAbrirProductos">
+            <span class="icon" id="productoIconoSel">+</span>
+            <span id="productoTextoSel">Elegir producto</span>
+          </button>
+        </div>
+
+        <div class="field" style="max-width:130px;">
+          <label>Monto</label>
+          <input type="number" id="movMonto" placeholder="0" min="0" step="0.01">
+        </div>
+
+        <div class="field" style="max-width:150px;">
+          <label>Método</label>
+          <select id="movMetodo">
+            <option value="efectivo">Efectivo</option>
+            <option value="transferencia">Transferencia</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="chip-panel" id="panelProductos" hidden>
+        <div class="chip-grid" id="chipGrid"></div>
+        <div class="chip-add-form" id="chipAddForm" hidden>
+          <input type="text" id="nuevoProductoIcono" maxlength="4" placeholder="🌶️" style="max-width:56px;text-align:center;">
+          <input type="text" id="nuevoProductoNombre" placeholder="Nombre del producto" style="flex:1;min-width:140px;">
+          <button type="button" class="btn-primary" id="btnGuardarProducto">Agregar</button>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btnAddMov">Registrar movimiento</button>
+    </div>
+
+    <div class="card card-dark">
+      <div class="chart-header">
+        <h2 class="dark-title">Evolución del mes</h2>
+        <div class="month-nav">
+          <button class="month-btn" id="mesPrev" aria-label="Mes anterior">&#8249;</button>
+          <span id="mesLabel"></span>
+          <button class="month-btn" id="mesNext" aria-label="Mes siguiente">&#8250;</button>
+        </div>
+      </div>
+      <div class="chart-legend"><span class="dot"></span> Balance del mes</div>
+      <div id="graficoMovimientos"></div>
+    </div>
+
+    <div class="card">
+      <h2>Historial del turno actual</h2>
+      <div id="tablaMovimientos"><div class="empty">No hay movimientos registrados en este turno.</div></div>
+    </div>
+  </section>
+
+  <!-- CIERRE DE CAJA -->
+  <section class="panel" id="panel-cierre">
+    <div class="card">
+      <h2>Cierre de turno</h2>
+      <div class="row">
+        <div class="field">
+          <label>Saldo inicial</label>
+          <input type="text" inputmode="decimal" id="cInicial" placeholder="0" class="miles">
+        </div>
+        <div class="field">
+          <label>Gastos</label>
+          <input type="text" inputmode="decimal" id="cGastos" placeholder="0" class="miles">
+        </div>
+        <div class="field">
+          <label>Extras</label>
+          <input type="text" inputmode="decimal" id="cExtras" placeholder="0" class="miles">
+        </div>
+        <div class="field">
+          <label>Saldo final</label>
+          <input type="text" inputmode="decimal" id="cFinal" placeholder="0" class="miles">
+        </div>
+      </div>
+
+      <div class="summary">
+        <div class="stat saldo"><div class="label">Diferencia</div><div class="value" id="cDiferencia">$0</div></div>
+      </div>
+
+      <button class="btn-gold" id="btnCerrarCaja">Cerrar turno</button>
+
+      <div id="resultadoCierre"></div>
+    </div>
+
+    <div class="card">
+      <h2>Cierres anteriores</h2>
+      <div id="historialCierres"><div class="empty">Todavía no hiciste ningún cierre.</div></div>
+    </div>
+  </section>
+
+  <!-- CONTROL DE CAJA -->
+  <section class="panel" id="panel-control">
+    <div class="card">
+      <h2>Retiro cada 2 días</h2>
+      <div class="row">
+        <div class="field">
+          <label>Ganancia de estos días (diferencia)</label>
+          <input type="text" inputmode="decimal" id="ctrlGanancia" placeholder="0" class="miles">
+        </div>
+      </div>
+
+      <div class="summary">
+        <div class="stat egr"><div class="label">Tenés que sacar</div><div class="value" id="ctrlSacar">$0</div></div>
+        <div class="stat saldo"><div class="label">Te queda en caja</div><div class="value" id="ctrlQueda">$25.000,00</div></div>
+      </div>
+
+      <button class="btn-gold" id="btnRetiroCaja">Registrar retiro</button>
+      <button class="btn-ghost" id="btnLimpiarRetiro">Empezar próximo control</button>
+      <div id="resultadoRetiro"></div>
+    </div>
+
+    <div class="card">
+      <h2>Retiros anteriores</h2>
+      <div id="historialRetiros"><div class="empty">Todavía no registraste ningún retiro.</div></div>
+    </div>
+  </section>
+
+  <footer>hecho a fuego lento 🌶</footer>
+</div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
