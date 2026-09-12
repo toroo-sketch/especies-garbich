@@ -325,6 +325,12 @@ function renderGraficoMovimientos(){
     return d.getFullYear()===year && d.getMonth()===month;
   });
 
+  const totalIngresos = delMes.filter(m=>m.tipo==='ingreso').reduce((a,m)=>a+m.monto,0);
+  const totalGastos = delMes.filter(m=>m.tipo==='egreso').reduce((a,m)=>a+m.monto,0);
+  document.getElementById('resumenIngresos').textContent = fmt(totalIngresos);
+  document.getElementById('resumenGastos').textContent = fmt(totalGastos);
+  document.getElementById('resumenSaldoMes').textContent = fmt(totalIngresos - totalGastos);
+
   if(delMes.length===0){
     el.innerHTML = '<div class="chart-empty">Todavía no hay movimientos cargados este mes.</div>';
     return;
