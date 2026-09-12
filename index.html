@@ -196,6 +196,31 @@
           <button class="month-btn" id="mesNext" aria-label="Mes siguiente">&#8250;</button>
         </div>
       </div>
+
+      <div class="resumen-mes" id="resumenMes">
+        <div class="resumen-item">
+          <span class="resumen-icono ingreso">&#8593;</span>
+          <div>
+            <div class="resumen-label">Ingresos totales</div>
+            <div class="resumen-valor" id="resumenIngresos">$0</div>
+          </div>
+        </div>
+        <div class="resumen-item">
+          <span class="resumen-icono gasto">&#8595;</span>
+          <div>
+            <div class="resumen-label">Gastos totales</div>
+            <div class="resumen-valor" id="resumenGastos">$0</div>
+          </div>
+        </div>
+        <div class="resumen-item">
+          <span class="resumen-icono saldo">$</span>
+          <div>
+            <div class="resumen-label">Saldo del mes</div>
+            <div class="resumen-valor" id="resumenSaldoMes">$0</div>
+          </div>
+        </div>
+      </div>
+
       <div class="chart-legend"><span class="dot"></span> Balance del mes</div>
       <div id="graficoMovimientos"></div>
     </div>
